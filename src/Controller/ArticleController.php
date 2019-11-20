@@ -14,13 +14,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
 use function Sodium\add;
 
 class ArticleController extends Controller
 {
     /**
-     * @Route("/", name="article_list")
-     * @Method({"GET"})
+     * @Route("/", name="article_list",
+     *  methods={"GET"})
      */
     public function index()
     {
@@ -42,28 +43,28 @@ class ArticleController extends Controller
             ->add('body', TextareaType::class, array(
                 'required' => false,
                 'attr' => array('class' => 'form-control')
-                ))
-                ->add('save', SubmitType::class, array(
-                    'label' => 'Create',
-                    'attr' => array('class' => 'btn btn-primary mt-3')
-                ))
-                ->getForm();
+            ))
+            ->add('save', SubmitType::class, array(
+                'label' => 'Create',
+                'attr' => array('class' => 'btn btn-primary mt-3')
+            ))
+            ->getForm();
 
-            $form->handleRequest($request);
+        $form->handleRequest($request);
 
-            if ($form->isSubmitted() && $form->isValid()) {
-                $article = $form->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $article = $form->getData();
 
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($article);
-                $entityManager->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($article);
+            $entityManager->flush();
 
-                return $this->redirectToRoute('article_list');
-            }
+            return $this->redirectToRoute('article_list');
+        }
 
-            return $this->render('articles/new.html.twig', array(
-                'form' => $form->createView()
-            ));
+        return $this->render('articles/new.html.twig', array(
+            'form' => $form->createView()
+        ));
     }
 
     /**
@@ -116,39 +117,4 @@ class ArticleController extends Controller
         return $this->render('articles/show.html.twig', array('article' => $article));
     }
 
-    /**
-     * @Route("/article/delete/{id}",
-     *  methods={"DELETE"}
-     *  )
-     */
-    public function delete(Request $request, $id)
-    {
-        $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
-
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $entityManager->remove($article);
-        $entityManager->flush();
-
-        $response = new Response();
-        $response->send();
-    }
-
-//    /**
-//     * @Route("/article/save")
-//     */
-//    public function save()
-//    {
-//        $entityManager = $this->getDoctrine()->getManager();
-//
-//        $article = new Article();
-//        $article->setTitle('Article Two');
-//        $article->setBody('This is the body for article Two');
-//
-//        $entityManager->persist($article);
-//
-//        $entityManager->flush();
-//
-//        return new Response('Saved an article with the id of' . $article->getId());
-//    }
 }
