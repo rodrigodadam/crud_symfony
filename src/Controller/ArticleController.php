@@ -13,31 +13,34 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class ArticleController extends Controller
 {
     /**
-     * @Route("/")
+     * @Route("/", name="article_list")
      * @Method({"GET"})
      */
     public function index()
     {
-//        return new Response('<html><body>Hello World</body></html>');
-        $articles = ['Article 1', 'Article 2'];
+        $articles = $this->getDoctrine()->getRepository(Article::class)->findAll();
         return $this->render('articles/index.html.twig', array('articles' => $articles));
     }
 
-    /**
-     * @Route("/article/save")
-     */
-    public function save()
-    {
-        $entityManager = $this->getDoctrine()->getManager();
 
-        $article = new Article();
-        $article->setTitle('Article One');
-        $article->setBody('This is the body for article one');
 
-        $entityManager->persist($article);
 
-        $entityManager->flush();
 
-        return new Response('Save an article with the id of' . $article->getId());
-    }
+//    /**
+//     * @Route("/article/save")
+//     */
+//    public function save()
+//    {
+//        $entityManager = $this->getDoctrine()->getManager();
+//
+//        $article = new Article();
+//        $article->setTitle('Article Two');
+//        $article->setBody('This is the body for article Two');
+//
+//        $entityManager->persist($article);
+//
+//        $entityManager->flush();
+//
+//        return new Response('Saved an article with the id of' . $article->getId());
+//    }
 }
