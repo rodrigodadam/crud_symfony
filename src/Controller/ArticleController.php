@@ -67,7 +67,7 @@ class ArticleController extends Controller
     }
 
     /**
-     * @Route("/article/edit",
+     * @Route("/article/edit/{id}",
      *     name="edit_article",
      *     methods={"GET", "POST"})
      */
@@ -75,6 +75,7 @@ class ArticleController extends Controller
     {
 
         $article = new Article();
+        $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
 
         $form = $this->createFormBuilder($article)
             ->add('title', TextType::class, array('attr' => array('class' => 'form-control')))
@@ -91,16 +92,15 @@ class ArticleController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $article = $form->getData();
+//            $article = $form->getData();
 
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($article);
             $entityManager->flush();
 
             return $this->redirectToRoute('article_list');
         }
 
-        return $this->render('articles/new.html.twig', array(
+        return $this->render('articles/edit.html.twig', array(
             'form' => $form->createView()
         ));
     }
@@ -117,8 +117,9 @@ class ArticleController extends Controller
     }
 
     /**
-     * @Route("/article/delete/{id}")
-     * @Method({"DELETE"})
+     * @Route("/article/delete/{id}",
+     *  methods={"DELETE"}
+     *  )
      */
     public function delete(Request $request, $id)
     {
